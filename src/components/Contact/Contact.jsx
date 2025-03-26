@@ -1,19 +1,18 @@
-import { FcPhoneAndroid } from "react-icons/fc";
-import { GrUserManager } from "react-icons/gr";
+import { useDispatch } from "react-redux";
+import { deleteContact } from "../../redux/contactsSlice";
 import css from "./Contact.module.css";
 
-export default function Contact({ id, name, number, onDelete }) {
+export default function Contact({ id, name, number }) {
+  const dispatch = useDispatch();
+
   return (
     <div className={css.contact}>
-      <p>
-        <GrUserManager className={css.icon} />
-        {name}
-      </p>
-      <p>
-        <FcPhoneAndroid className={css.icon} />
-        {number}
-      </p>
-      <button className={css.btnDelete} onClick={() => onDelete(id)}>
+      <p className={css.contactName}>{name}</p>
+      <p className={css.contactNumber}>{number}</p>
+      <button
+        className={css.btnDelete}
+        onClick={() => dispatch(deleteContact(id))}
+      >
         Delete
       </button>
     </div>

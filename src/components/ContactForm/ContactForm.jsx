@@ -1,6 +1,8 @@
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { nanoid } from "nanoid";
+import { useDispatch, useSelector } from "react-redux";
+import { addContact } from "../../redux/contactsSlice";
 import css from "./ContactForm.module.css";
 
 const FeedbackSchema = Yup.object().shape({
@@ -9,7 +11,7 @@ const FeedbackSchema = Yup.object().shape({
     .max(50, "Too Long!")
     .required("Required"),
   phone: Yup.string()
-    .matches(/^\d{3}-\d{2}-\d{2}$/, "Phone number must be in format 333-22-22")
+    .matches(/^\d{3}-\d{2}-\d{2}$/, "Format: 333-22-22")
     .required("Required"),
 });
 
@@ -18,14 +20,27 @@ const initialValues = {
   phone: "",
 };
 
-export default function ContactForm({ onAddContact }) {
+export default function ContactForm() {
+  const dispatch = useDispatch();
+  const contacts = useSelector((state) => state.contacts.items);
+
   const handleSubmit = (values, actions) => {
+    const isDuplicate = contacts.some(
+      (contact) => contact.name.toLowerCase() === values.username.toLowerCase()
+    );
+
+    if (isDuplicate) {
+      alert("This contact already exists!");
+      return;
+    }
+
     const newContact = {
       id: nanoid(),
       name: values.username,
       number: values.phone,
     };
-    onAddContact(newContact);
+
+    dispatch(addContact(newContact));
     actions.resetForm();
   };
 
